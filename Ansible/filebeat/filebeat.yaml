@@ -1,0 +1,28 @@
+---
+- hosts: web
+  become: yes
+  gather_facts: true
+  tasks:
+  
+  - name: install filebeat
+    ansible.builtin.apt:
+      deb: "https://ftp.yandex.ru/mirrors/elastic/7/pool/main/f/filebeat/filebeat-7.17.14-amd64.deb"
+
+  - name: copy filebeat config file
+    ansible.builtin.copy:
+      src: filebeat.yml
+      dest: /etc/filebeat/filebeat.yml
+      backup: yes
+
+  - name: Автозагрузка filebeat
+    ansible.builtin.command:
+           sudo systemctl enable filebeat
+
+  - name: Make sure a service is running
+    ansible.builtin.systemd:
+      state: started
+      name: filebeat
+
+  - name: Index patterns
+    ansible.builtin.command:
+          sudo filebeat setup -e  

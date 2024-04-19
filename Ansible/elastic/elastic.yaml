@@ -1,0 +1,24 @@
+---
+- hosts: elastic
+  become: yes
+  gather_facts: true
+  tasks:
+
+  - name: install elastic
+    ansible.builtin.apt:
+      deb: "https://ftp.yandex.ru/mirrors/elastic/7/pool/main/e/elasticsearch/elasticsearch-7.17.14-amd64.deb"
+
+  - name: copy elasticsearch config file
+    ansible.builtin.copy:
+      src: elasticsearch.yml
+      dest: /etc/elasticsearch/elasticsearch.yml
+      backup: yes
+
+  - name: enable elasticsearch
+    ansible.builtin.command:
+        sudo systemctl enable elasticsearch 
+
+  - name: Make sure a service is running
+    ansible.builtin.systemd:
+      state: started
+      name: elasticsearch

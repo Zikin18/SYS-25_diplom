@@ -1,0 +1,43 @@
+---
+- hosts: 
+    - web
+    - elastic
+    - kibana
+    - bastion
+  become: yes
+  gather_facts: true
+  tasks:
+  
+    - name: download zabbix-agent
+      ansible.builtin.apt:
+          deb: "https://repo.zabbix.com/zabbix/6.4/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.4-1+ubuntu22.04_all.deb"
+
+    - name: apt-get update
+      ansible.builtin.apt:
+         update_cache: yes
+
+    - name: install zabbix-agent  
+      ansible.builtin.apt:
+        name: zabbix-agent
+        state: present
+
+    - name: copy zabbix_agentd configuration
+      ansible.builtin.copy:
+          src: ./config/zabbix_agentd.conf
+          dest: /etc/zabbix/zabbix_agentd.conf
+          owner: root
+          group: root
+          mode: '0644'
+          backup: yes      
+
+    - name: enable zabbix-agent
+      ansible.builtin.command:
+        sudo systemctl enable zabbix-agent
+    
+    - name: restart
+      ansible.builtin.systemd:
+          name: '{{ item }}'
+          enabled: yes
+          state: restarted 
+      with_items:
+          - zabbix-agent      

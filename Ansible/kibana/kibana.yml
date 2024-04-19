@@ -1,0 +1,7 @@
+server.port: 5601
+server.host: 0.0.0.0
+server.ssl.enabled: false
+server.name: "kibana.ru-central1.internal"
+
+elasticsearch.hosts: ['http://elasticsearch.ru-central1.internal:9200']
+elasticsearch.ssl.verificationMode: "none"

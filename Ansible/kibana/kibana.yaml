@@ -1,0 +1,24 @@
+---
+- hosts: kibana
+  become: yes
+  gather_facts: true
+  tasks:
+
+  - name: install kibana
+    ansible.builtin.apt:
+      deb: "https://ftp.yandex.ru/mirrors/elastic/7/pool/main/k/kibana/kibana-7.17.14-amd64.deb"
+
+  - name: copy kibana config file
+    ansible.builtin.copy:
+      src: kibana.yml
+      dest: /etc/kibana/kibana.yml
+      backup: yes
+
+  - name: enable kibana
+    ansible.builtin.command:
+      sudo systemctl enable kibana
+
+  - name: Make sure a service is running
+    ansible.builtin.systemd:
+      state: started
+      name: kibana
